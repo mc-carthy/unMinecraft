@@ -4,7 +4,7 @@ using UnityEngine;
 public class WorldController : MonoBehaviour {
 
     public GameObject block;
-    public int worldSize = 2;
+    public int worldSize;
 
     private void Start()
     {
