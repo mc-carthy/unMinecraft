@@ -16,6 +16,7 @@ public class CreateQuads : MonoBehaviour {
     private void Start()
     {
         CreateCube();
+        CombineQuads();
     }
 
     private void CreateCube()
@@ -107,6 +108,36 @@ public class CreateQuads : MonoBehaviour {
         meshFilter.mesh = mesh;
         MeshRenderer meshRenderer = (MeshRenderer)quad.AddComponent(typeof(MeshRenderer));
         meshRenderer.material = cubeMat;
+    }
+
+    private void CombineQuads()
+    {
+        // Combine meshes in children
+        MeshFilter[] meshFilters = GetComponentsInChildren<MeshFilter>();
+        CombineInstance[] combine = new CombineInstance[meshFilters.Length];
+        
+        for (int i = 0; i < meshFilters.Length; i++)
+        {
+            combine[i].mesh = meshFilters[i].sharedMesh;
+            combine[i].transform = meshFilters[i].transform.localToWorldMatrix;
+        }
+
+        // Create a new mesh on the parent
+        MeshFilter newMeshFilter = (MeshFilter) gameObject.AddComponent(typeof(MeshFilter));
+        newMeshFilter.mesh = new Mesh();
+
+        // Add combined child meshes as parent's mesh
+        newMeshFilter.mesh.CombineMeshes(combine);
+
+        // Create a renderer for the parent
+        MeshRenderer meshRenderer = (MeshRenderer) gameObject.AddComponent(typeof(MeshRenderer));
+        meshRenderer.material = cubeMat;
+
+        // Delete the children whose meshes we've combined
+        foreach (Transform quad in transform)
+        {
+            Destroy(quad.gameObject);
+        }
     }
 
 }
