@@ -11,7 +11,45 @@ public class CreateQuads : MonoBehaviour {
         BACK
     };
 
+    public enum BlockType {
+        GRASS,
+        DIRT,
+        STONE
+    };
+
     public Material cubeMat;
+    public BlockType blockType;
+
+    private Vector2[,] blockUvs = {
+        // Grass Top
+        {
+            new Vector2(0.125f, 0.375f), 
+            new Vector2(0.1875f, 0.375f),
+            new Vector2(0.125f, 0.4375f),
+            new Vector2(0.1875f, 0.4375f)
+        },
+        // Grass Side
+        {
+            new Vector2(0.1875f, 0.9375f),
+            new Vector2(0.25f, 0.9375f),
+            new Vector2(0.1875f, 1.0f),
+            new Vector2(0.25f, 1.0f)
+        },
+        // Dirt
+        {
+            new Vector2(0.125f, 0.9375f),
+            new Vector2(0.1875f, 0.9375f),
+            new Vector2(0.125f, 1.0f),
+            new Vector2(0.1875f, 1.0f)
+        },
+        // Stone
+        {
+            new Vector2(0, 0.875f),
+            new Vector2(0.0625f, 0.875f),
+            new Vector2(0, 0.9375f),
+            new Vector2(0.0625f, 0.9375f)
+        }
+    };
 
     private void Start()
     {
@@ -49,11 +87,34 @@ public class CreateQuads : MonoBehaviour {
         Vector3 p6 = new Vector3(0.5f, 0.5f, -0.5f);
         Vector3 p7 = new Vector3(-0.5f, 0.5f, -0.5f);
 
-        // All possible UVs
-        Vector2 uv00 = new Vector2(0f, 0f);
-        Vector2 uv10 = new Vector2(1f, 0f);
-        Vector2 uv01 = new Vector2(0f, 1f);
-        Vector2 uv11 = new Vector2(1f, 1f);
+        // All possible UVs§
+        Vector2 uv00;
+        Vector2 uv10;
+        Vector2 uv01;
+        Vector2 uv11;
+
+        if (blockType == BlockType.GRASS && cubeSide == CubeSide.TOP)
+        {
+            uv00 = blockUvs[0, 0];
+            uv10 = blockUvs[0, 1];
+            uv01 = blockUvs[0, 2];
+            uv11 = blockUvs[0, 3];
+        }
+        // The bottom side of a grass block is dirt
+        else if (blockType == BlockType.GRASS && cubeSide == CubeSide.TOP)
+        {
+            uv00 = blockUvs[(int)(BlockType.DIRT + 1), 0];
+            uv10 = blockUvs[(int)(BlockType.DIRT + 1), 1];
+            uv01 = blockUvs[(int)(BlockType.DIRT + 1), 2];
+            uv11 = blockUvs[(int)(BlockType.DIRT + 1), 3];
+        }
+        else
+        {
+            uv00 = blockUvs[(int)(blockType + 1), 0];
+            uv10 = blockUvs[(int)(blockType + 1), 1];
+            uv01 = blockUvs[(int)(blockType + 1), 2];
+            uv11 = blockUvs[(int)(blockType + 1), 3];
+        }
 
         switch(cubeSide)
         {
