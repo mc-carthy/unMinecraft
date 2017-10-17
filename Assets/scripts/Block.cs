@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class CreateQuads : MonoBehaviour {
+public class Block {
 
     enum CubeSide {
         BOTTOM,
@@ -17,32 +17,34 @@ public class CreateQuads : MonoBehaviour {
         STONE
     };
 
-    public Material cubeMat;
-    public BlockType blockType;
+    private BlockType blockType;
+    private Vector3 pos;
+    private GameObject parent;
+    private Material cubeMat;
 
     private Vector2[,] blockUvs = {
-        // Grass Top
+        // 0 - Grass Top
         {
             new Vector2(0.125f, 0.375f), 
             new Vector2(0.1875f, 0.375f),
             new Vector2(0.125f, 0.4375f),
             new Vector2(0.1875f, 0.4375f)
         },
-        // Grass Side
+        // 1 - Grass Side
         {
             new Vector2(0.1875f, 0.9375f),
             new Vector2(0.25f, 0.9375f),
             new Vector2(0.1875f, 1.0f),
             new Vector2(0.25f, 1.0f)
         },
-        // Dirt
+        // 2 - Dirt
         {
             new Vector2(0.125f, 0.9375f),
             new Vector2(0.1875f, 0.9375f),
             new Vector2(0.125f, 1.0f),
             new Vector2(0.1875f, 1.0f)
         },
-        // Stone
+        // 3 - Stone
         {
             new Vector2(0, 0.875f),
             new Vector2(0.0625f, 0.875f),
@@ -51,13 +53,15 @@ public class CreateQuads : MonoBehaviour {
         }
     };
 
-    private void Start()
+    public Block(BlockType _blockType, Vector3 _pos, GameObject _parent, Material _cubeMat)
     {
-        CreateCube();
-        CombineQuads();
+        blockType = _blockType;
+        pos = _pos;
+        parent = _parent;
+        cubeMat = _cubeMat;
     }
 
-    private void CreateCube()
+    public void DrawCube()
     {
         CreateQuad(CubeSide.BOTTOM);
         CreateQuad(CubeSide.TOP);
@@ -70,7 +74,7 @@ public class CreateQuads : MonoBehaviour {
     private void CreateQuad(CubeSide cubeSide)
     {
         Mesh mesh = new Mesh();
-        mesh.name = "ScriptedMesh";
+        mesh.name = "ScriptedMesh" + cubeSide.ToString();
 
         Vector3[] vertices = new Vector3[4];
         Vector3[] normals = new Vector3[4];
@@ -164,41 +168,12 @@ public class CreateQuads : MonoBehaviour {
         mesh.RecalculateBounds();
 
         GameObject quad = new GameObject("quad");
-        quad.transform.parent = this.gameObject.transform;
+        quad.transform.position = pos;
+        quad.transform.parent = parent.transform;
         MeshFilter meshFilter = (MeshFilter)quad.AddComponent(typeof(MeshFilter));
         meshFilter.mesh = mesh;
         MeshRenderer meshRenderer = (MeshRenderer)quad.AddComponent(typeof(MeshRenderer));
         meshRenderer.material = cubeMat;
-    }
-
-    private void CombineQuads()
-    {
-        // Combine meshes in children
-        MeshFilter[] meshFilters = GetComponentsInChildren<MeshFilter>();
-        CombineInstance[] combine = new CombineInstance[meshFilters.Length];
-        
-        for (int i = 0; i < meshFilters.Length; i++)
-        {
-            combine[i].mesh = meshFilters[i].sharedMesh;
-            combine[i].transform = meshFilters[i].transform.localToWorldMatrix;
-        }
-
-        // Create a new mesh on the parent
-        MeshFilter newMeshFilter = (MeshFilter) gameObject.AddComponent(typeof(MeshFilter));
-        newMeshFilter.mesh = new Mesh();
-
-        // Add combined child meshes as parent's mesh
-        newMeshFilter.mesh.CombineMeshes(combine);
-
-        // Create a renderer for the parent
-        MeshRenderer meshRenderer = (MeshRenderer) gameObject.AddComponent(typeof(MeshRenderer));
-        meshRenderer.material = cubeMat;
-
-        // Delete the children whose meshes we've combined
-        foreach (Transform quad in transform)
-        {
-            Destroy(quad.gameObject);
-        }
     }
 
 }
