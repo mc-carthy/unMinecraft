@@ -17,6 +17,7 @@ public class Block {
         STONE
     };
 
+    public bool isSolid;
     private BlockType blockType;
     private Vector3 pos;
     private GameObject parent;
@@ -59,16 +60,48 @@ public class Block {
         pos = _pos;
         parent = _parent;
         cubeMat = _cubeMat;
+        isSolid = true;
     }
 
     public void DrawCube()
     {
-        CreateQuad(CubeSide.BOTTOM);
-        CreateQuad(CubeSide.TOP);
-        CreateQuad(CubeSide.LEFT);
-        CreateQuad(CubeSide.RIGHT);
-        CreateQuad(CubeSide.FRONT);
-        CreateQuad(CubeSide.BACK);
+        if (!HasSolidNeighbour((int)pos.x, (int)pos.y - 1, (int)pos.z))
+        {
+            CreateQuad(CubeSide.BOTTOM);
+        }
+        if (!HasSolidNeighbour((int)pos.x, (int)pos.y + 1, (int)pos.z))
+        {
+            CreateQuad(CubeSide.TOP);
+        }
+        if (!HasSolidNeighbour((int)pos.x - 1, (int)pos.y, (int)pos.z))
+        {
+            CreateQuad(CubeSide.LEFT);
+        }
+        if (!HasSolidNeighbour((int)pos.x + 1, (int)pos.y, (int)pos.z))
+        {
+            CreateQuad(CubeSide.RIGHT);
+        }
+        if (!HasSolidNeighbour((int)pos.x, (int)pos.y, (int)pos.z + 1))
+        {
+            CreateQuad(CubeSide.FRONT);
+        }
+        if (!HasSolidNeighbour((int)pos.x, (int)pos.y, (int)pos.z - 1))
+        {
+            CreateQuad(CubeSide.BACK);
+        }
+    }
+
+    public bool HasSolidNeighbour(int x, int y, int z)
+    {
+        Block[,,] chunks = parent.GetComponent<Chunk>().chunkData;
+
+        try
+        {
+            return chunks[x, y, z].isSolid;
+        }
+        catch (System.IndexOutOfRangeException ex) {}
+
+        return false;
     }
 
     private void CreateQuad(CubeSide cubeSide)
