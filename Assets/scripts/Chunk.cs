@@ -11,6 +11,7 @@ public class Chunk : MonoBehaviour {
         StartCoroutine(BuildChunk(4, 4, 4));
     } 
 
+    // TODO - Change this to a void return for non-debugging purposes
     private IEnumerator BuildChunk(int sizeX, int sizeY, int sizeZ)
     {
         chunkData = new Block[sizeX, sizeY, sizeZ];
@@ -43,11 +44,11 @@ public class Chunk : MonoBehaviour {
                 for (int x = 0; x < sizeX; x++)
                 {
                     chunkData[x, y, z].DrawCube();
-                    yield return null;
                 }   
             }   
         }
         CombineQuads();
+        yield return null;
     }
 
     private void CombineQuads()

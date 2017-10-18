@@ -211,8 +211,10 @@ public class Block {
         quad.transform.parent = parent.transform;
         MeshFilter meshFilter = (MeshFilter)quad.AddComponent(typeof(MeshFilter));
         meshFilter.mesh = mesh;
-        MeshRenderer meshRenderer = (MeshRenderer)quad.AddComponent(typeof(MeshRenderer));
-        meshRenderer.material = cubeMat;
+
+        // This is not required unless we're showing individual quads instead of combining them
+        // MeshRenderer meshRenderer = (MeshRenderer)quad.AddComponent(typeof(MeshRenderer));
+        // meshRenderer.material = cubeMat;
     }
 
 }
