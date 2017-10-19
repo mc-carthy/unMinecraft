@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 public class Block {
 
@@ -102,7 +103,41 @@ public class Block {
     {
         Block[,,] chunks;
 
-        chunks = owner.chunkData;
+        if (
+            x < 0 ||  x >= World.chunkSize ||
+            y < 0 ||  y >= World.chunkSize ||
+            z < 0 ||  z >= World.chunkSize
+        )
+        // The block is in a neighbouring chunk
+        {
+            Vector3 neighbourChunkPos = parent.transform.position + 
+                new Vector3(
+                    (x - (int)pos.x) * World.chunkSize,
+                    (y - (int)pos.y) * World.chunkSize,
+                    (z - (int)pos.z) * World.chunkSize
+                );
+
+            string neighbourName = World.BuildChunkName(neighbourChunkPos);
+
+            x = ConvertBlockIndexToLocal(x);
+            y = ConvertBlockIndexToLocal(y);
+            z = ConvertBlockIndexToLocal(z);
+
+            Chunk newChunk;
+            if (World.chunks.TryGetValue(neighbourName, out newChunk))
+            {
+                chunks = newChunk.chunkData;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        // The block is in this chunk
+        else
+        {
+            chunks = owner.chunkData;
+        }
 
         try
         {
@@ -111,6 +146,20 @@ public class Block {
         catch (System.IndexOutOfRangeException) {}
 
         return false;
+    }
+
+    private int ConvertBlockIndexToLocal(int i)
+    {
+        if (i == -1)
+        {
+            i = World.chunkSize - 1;
+        }
+        else if (i == World.chunkSize)
+        {
+            i = 0;
+        }
+        
+        return i;
     }
 
     private void CreateQuad(CubeSide cubeSide)
