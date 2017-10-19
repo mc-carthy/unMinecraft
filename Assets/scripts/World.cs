@@ -4,8 +4,9 @@ using UnityEngine;
 
 public class World : MonoBehaviour {
 
-    public static int chunkSize = 16;
-    public static int columnHeight = 16;
+    public static int chunkSize = 8;
+    public static int columnHeight = 4;
+    public static int worldSize = 2;
     public static Dictionary<string, Chunk> chunks;
     
     public Material textureAtlas;
@@ -15,7 +16,7 @@ public class World : MonoBehaviour {
         chunks = new Dictionary<string, Chunk>();
         transform.position = Vector3.zero;
         transform.rotation = Quaternion.identity;
-        StartCoroutine(BuildChunkColumn());
+        StartCoroutine(BuildWorld());
     }
 
     public static string BuildChunkName(Vector3 pos)
@@ -43,6 +44,29 @@ public class World : MonoBehaviour {
             yield return null;
         }
 
+    }
+
+    private IEnumerator BuildWorld()
+    {
+        for (int z = 0; z < World.chunkSize; z++)
+        {
+            for (int y = 0; y < columnHeight; y++)
+            {
+                for (int x = 0; x < World.chunkSize; x++)
+                {
+                    Vector3 chunkPos = new Vector3(x * chunkSize, y * chunkSize, z * chunkSize);
+                    Chunk c = new Chunk(chunkPos, textureAtlas);
+                    c.chunk.transform.parent = transform;
+                    chunks.Add(c.chunk.name, c);
+                }
+            }
+        }
+
+        foreach(KeyValuePair<string, Chunk> c in chunks)
+        {
+            c.Value.DrawChunk();
+            yield return null;
+        }
     }
 
 }

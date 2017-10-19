@@ -187,7 +187,7 @@ GameObject:
   - component: {fileID: 505881520}
   - component: {fileID: 505881519}
   m_Layer: 0
-  m_Name: chunk
+  m_Name: world
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -201,10 +201,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 505881518}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1876a8689b53e4d18b3bec7753d89d33, type: 3}
+  m_Script: {fileID: 11500000, guid: 19442ee9672e34828925a55555f92c02, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cubeMat: {fileID: 2100000, guid: a8e14652bdb4d46c8ae813c315107023, type: 2}
+  textureAtlas: {fileID: 2100000, guid: a8e14652bdb4d46c8ae813c315107023, type: 2}
 --- !u!4 &505881520
 Transform:
   m_ObjectHideFlags: 0
