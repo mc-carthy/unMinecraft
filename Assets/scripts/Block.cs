@@ -21,6 +21,7 @@ public class Block {
     public bool isSolid;
     private BlockType blockType;
     private Vector3 pos;
+    private Chunk owner;
     private GameObject parent;
     private Material cubeMat;
 
@@ -55,12 +56,12 @@ public class Block {
         }
     };
 
-    public Block(BlockType _blockType, Vector3 _pos, GameObject _parent, Material _cubeMat)
+    public Block(BlockType _blockType, Vector3 _pos, GameObject _parent, Chunk _owner)
     {
         blockType = _blockType;
         pos = _pos;
         parent = _parent;
-        cubeMat = _cubeMat;
+        owner = _owner;
         isSolid = (_blockType == BlockType.AIR) ? false :true;
     }
 
@@ -99,13 +100,15 @@ public class Block {
 
     public bool HasSolidNeighbour(int x, int y, int z)
     {
-        Block[,,] chunks = parent.GetComponent<Chunk>().chunkData;
+        Block[,,] chunks;
+
+        chunks = owner.chunkData;
 
         try
         {
             return chunks[x, y, z].isSolid;
         }
-        catch (System.IndexOutOfRangeException ex) {}
+        catch (System.IndexOutOfRangeException) {}
 
         return false;
     }
