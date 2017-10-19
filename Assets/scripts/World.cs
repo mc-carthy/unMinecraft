@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class World : MonoBehaviour {
 
-    public static int chunkSize = 8;
-    public static int columnHeight = 4;
+    public static int chunkSize = 16;
+    public static int columnHeight = 2;
     public static int worldSize = 2;
     public static Dictionary<string, Chunk> chunks;
     
