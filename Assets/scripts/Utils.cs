@@ -35,14 +35,14 @@ public class Utils {
         return (total / maxValue);
     }
 
-    public static float fBM3D(float x, float y, float z)
+    public static float fBM3D(float x, float y, float z, float smth, int oct)
     {
-        float XY = fBM(x * smooth * 10, y * smooth * 10, 3, 0.5f);
-        float YZ = fBM(y * smooth * 10, z * smooth * 10, 3, 0.5f);
-        float XZ = fBM(x * smooth * 10, z * smooth * 10, 3, 0.5f);
-        float YX = fBM(y * smooth * 10, x * smooth * 10, 3, 0.5f);
-        float ZY = fBM(z * smooth * 10, y * smooth * 10, 3, 0.5f);
-        float ZX = fBM(z * smooth * 10, x * smooth * 10, 3, 0.5f);
+        float XY = fBM(x * smth, y * smth, oct, 0.5f);
+        float YZ = fBM(y * smth, z * smth, oct, 0.5f);
+        float XZ = fBM(x * smth, z * smth, oct, 0.5f);
+        float YX = fBM(y * smth, x * smth, oct, 0.5f);
+        float ZY = fBM(z * smth, y * smth, oct, 0.5f);
+        float ZX = fBM(z * smth, x * smth, oct, 0.5f);
 
         return ((XY + YZ + XZ + YX + ZY + ZX) / 6.0f);
     }

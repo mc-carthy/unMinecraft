@@ -16,6 +16,7 @@ public class Block {
         GRASS,
         DIRT,
         STONE,
+        DIAMOND,
         AIR
     };
 
@@ -54,6 +55,13 @@ public class Block {
             new Vector2(0.0625f, 0.875f),
             new Vector2(0, 0.9375f),
             new Vector2(0.0625f, 0.9375f)
+        },
+        // 4 - Diamond
+        {
+            new Vector2(0.125f, 0.75f),
+            new Vector2(0.1875f, 0.75f),
+            new Vector2(0.125f, 0.8125f),
+            new Vector2(0.1875f, 0.8125f)
         }
     };
 

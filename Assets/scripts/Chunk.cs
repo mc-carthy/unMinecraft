@@ -47,13 +47,20 @@ public class Chunk {
                     int worldY = (int)(y + chunk.transform.position.y);
                     int worldZ = (int)(z + chunk.transform.position.z);
                     
-                    if (Utils.fBM3D(worldX, worldY, worldZ) < 0.42f)
+                    if (Utils.fBM3D(worldX, worldY, worldZ, 0.1f, 3) < 0.42f)
                     {
                         chunkData[x, y, z] = new Block(Block.BlockType.AIR, pos, chunk.gameObject, this);
                     }
                     else if (worldY <= Utils.GenerateStoneHeight(worldX, worldZ))
                     {
-                        chunkData[x, y, z] = new Block(Block.BlockType.STONE, pos, chunk.gameObject, this);                        
+                        if (Utils.fBM3D(worldX, worldY, worldZ, 0.01f, 2) < 0.35f && worldY < 30)
+                        {
+                            chunkData[x, y, z] = new Block(Block.BlockType.DIAMOND, pos, chunk.gameObject, this);                        
+                        }
+                        else
+                        {
+                            chunkData[x, y, z] = new Block(Block.BlockType.STONE, pos, chunk.gameObject, this);                        
+                        }
                     }
                     else if (worldY == Utils.GenerateHeight(worldX, worldZ))
                     {
