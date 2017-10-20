@@ -35,6 +35,18 @@ public class Utils {
         return (total / maxValue);
     }
 
+    public static float fBM3D(float x, float y, float z)
+    {
+        float XY = fBM(x * smooth * 10, y * smooth * 10, 3, 0.5f);
+        float YZ = fBM(y * smooth * 10, z * smooth * 10, 3, 0.5f);
+        float XZ = fBM(x * smooth * 10, z * smooth * 10, 3, 0.5f);
+        float YX = fBM(y * smooth * 10, x * smooth * 10, 3, 0.5f);
+        float ZY = fBM(z * smooth * 10, y * smooth * 10, 3, 0.5f);
+        float ZX = fBM(z * smooth * 10, x * smooth * 10, 3, 0.5f);
+
+        return ((XY + YZ + XZ + YX + ZY + ZX) / 6.0f);
+    }
+
     private static float Map(float min, float max, float omin, float omax, float value)
     {
         return Mathf.Lerp(min, max, Mathf.InverseLerp(omin, omax, value));
