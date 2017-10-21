@@ -29,6 +29,8 @@ public class Chunk {
             }   
         }
         CombineQuads();
+        MeshCollider meshCollider = (MeshCollider)chunk.gameObject.AddComponent(typeof(MeshCollider));
+        meshCollider.sharedMesh = chunk.transform.GetComponent<MeshFilter>().mesh;
     }
 
     private void BuildChunk()
