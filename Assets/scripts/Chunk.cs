@@ -3,9 +3,16 @@ using UnityEngine;
 
 public class Chunk {
 
+    public enum ChunkStatus {
+        DRAW,
+        DONE,
+        KEEP
+    }
+
     public Material cubeMat;
     public Block[,,] chunkData;
     public GameObject chunk;
+    public ChunkStatus status;
 
     public Chunk(Vector3 pos, Material _cubeMat)
     {
@@ -84,6 +91,8 @@ public class Chunk {
                     {
                         chunkData[x, y, z] = new Block(Block.BlockType.AIR, pos, chunk.gameObject, this);
                     }
+
+                    status = ChunkStatus.DRAW;
                 }   
             }   
         }

@@ -16,12 +16,23 @@ public class World : MonoBehaviour {
     public Camera uiCam;
     public Button playButton;
 
+    private bool firstBuild = true;
+    private bool building = false;
+
     private void Start()
     {
         player.SetActive(false);
         chunks = new Dictionary<string, Chunk>();
         transform.position = Vector3.zero;
         transform.rotation = Quaternion.identity;
+    }
+
+    private void Update()
+    {
+        if (!building && !firstBuild)
+        {
+            StartCoroutine(BuildWorld());
+        }
     }
 
     public void StartBuild()
@@ -58,6 +69,7 @@ public class World : MonoBehaviour {
 
     private IEnumerator BuildWorld()
     {
+        building = true;
         int posX = (int)Mathf.Floor(player.transform.position.x / chunkSize);
         int posZ = (int)Mathf.Floor(player.transform.position.z / chunkSize);
 
@@ -71,26 +83,55 @@ public class World : MonoBehaviour {
                 for (int y = 0; y < columnHeight; y++)
                 {
                     Vector3 chunkPos = new Vector3((x + posX) * chunkSize, y * chunkSize, (z + posZ) * chunkSize);
-                    Chunk c = new Chunk(chunkPos, textureAtlas);
-                    c.chunk.transform.parent = transform;
-                    chunks.Add(c.chunk.name, c);
-                    processCount++;
-                    loadingSlider.value = (processCount / totalChunks) * 100;
+                    Chunk c;
+                    string n = BuildChunkName(chunkPos);
+                    if (chunks.TryGetValue(n, out c))
+                    {
+                        c.status = Chunk.ChunkStatus.KEEP;
+                        break;
+                    }
+                    else
+                    {
+                        c = new Chunk(chunkPos, textureAtlas);
+                        c.chunk.transform.parent = transform;
+                        chunks.Add(c.chunk.name, c);
+                    }
+                    if (firstBuild)
+                    {
+                        processCount++;
+                        loadingSlider.value = (processCount / totalChunks) * 100;
+                    }
+                    yield return null;
                 }
             }
         }
 
         foreach(KeyValuePair<string, Chunk> c in chunks)
         {
-            c.Value.DrawChunk();
-            processCount++;
-            loadingSlider.value = (processCount / totalChunks) * 100;
+            if (c.Value.status == Chunk.ChunkStatus.DRAW)
+            {
+                c.Value.DrawChunk();
+                c.Value.status = Chunk.ChunkStatus.KEEP;
+            }
+
+            c.Value.status = Chunk.ChunkStatus.DONE;
+            if (firstBuild)
+            {
+                processCount++;
+                loadingSlider.value = (processCount / totalChunks) * 100;
+            }
             yield return null;
         }
-        player.SetActive(true);
-        loadingSlider.gameObject.SetActive(false);
-        uiCam.gameObject.SetActive(false);
-        playButton.gameObject.SetActive(false);
+
+        if (firstBuild)
+        {
+            player.SetActive(true);
+            loadingSlider.gameObject.SetActive(false);
+            uiCam.gameObject.SetActive(false);
+            playButton.gameObject.SetActive(false);
+            firstBuild = false;
+        }
+        building = false;
     }
 
 }
