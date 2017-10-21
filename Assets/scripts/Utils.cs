@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class Utils {
     // This should be less than (World.chunkSize * World.columnHeight)
-    static int maxHeight = 30;
+    static int maxHeight = 150;
     static float smooth = 0.01f;
     static int octaves = 4;
     static float persistence = 0.5f;
@@ -23,10 +23,11 @@ public class Utils {
         float frequency = 1;
         float amplitude = 1;
         float maxValue = 0;
+        float offset = 32000f;
 
         for (int i = 0; i < octaves; i++)
         {
-            total += Mathf.PerlinNoise(x * frequency, z * frequency) * amplitude;
+            total += Mathf.PerlinNoise((x + offset) * frequency, (z + offset) * frequency) * amplitude;
             maxValue += amplitude;
             amplitude *= persistence;
             frequency *= 2;

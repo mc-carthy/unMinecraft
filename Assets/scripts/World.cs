@@ -5,14 +5,16 @@ using UnityEngine;
 public class World : MonoBehaviour {
 
     public static int chunkSize = 16;
-    public static int columnHeight = 4;
-    public static int worldSize = 2;
+    public static int columnHeight = 16;
+    public static int worldGenRadius = 1;
     public static Dictionary<string, Chunk> chunks;
     
+    public GameObject player;
     public Material textureAtlas;
 
     private void Start()
     {
+        player.SetActive(false);
         chunks = new Dictionary<string, Chunk>();
         transform.position = Vector3.zero;
         transform.rotation = Quaternion.identity;
@@ -48,13 +50,16 @@ public class World : MonoBehaviour {
 
     private IEnumerator BuildWorld()
     {
-        for (int z = 0; z < World.chunkSize; z++)
+        int posX = (int)Mathf.Floor(player.transform.position.x / chunkSize);
+        int posZ = (int)Mathf.Floor(player.transform.position.z / chunkSize);
+
+        for (int z = -worldGenRadius; z <= worldGenRadius; z++)
         {
-            for (int y = 0; y < columnHeight; y++)
+            for (int x = -worldGenRadius; x <= worldGenRadius; x++)
             {
-                for (int x = 0; x < World.chunkSize; x++)
+                for (int y = 0; y < columnHeight; y++)
                 {
-                    Vector3 chunkPos = new Vector3(x * chunkSize, y * chunkSize, z * chunkSize);
+                    Vector3 chunkPos = new Vector3((x + posX) * chunkSize, y * chunkSize, (z + posZ) * chunkSize);
                     Chunk c = new Chunk(chunkPos, textureAtlas);
                     c.chunk.transform.parent = transform;
                     chunks.Add(c.chunk.name, c);
@@ -67,6 +72,7 @@ public class World : MonoBehaviour {
             c.Value.DrawChunk();
             yield return null;
         }
+        player.SetActive(true);
     }
 
 }
