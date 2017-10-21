@@ -17,6 +17,8 @@ public class Block {
         DIRT,
         STONE,
         DIAMOND,
+        BEDROCK,
+        REDSTONE,
         AIR
     };
 
@@ -62,6 +64,20 @@ public class Block {
             new Vector2(0.1875f, 0.75f),
             new Vector2(0.125f, 0.8125f),
             new Vector2(0.1875f, 0.8125f)
+        },
+        // 5 - Bedrock
+        {
+            new Vector2(0.0625f, 0.875f),
+            new Vector2(0.125f, 0.875f),
+            new Vector2(0.0625f, 0.9375f),
+            new Vector2(0.125f, 0.9375f)
+        },
+        // 6 - Redstone
+        {
+            new Vector2(0.1875f, 0.75f),
+            new Vector2(0.25f, 0.75f),
+            new Vector2(0.1875f, 0.8125f),
+            new Vector2(0.25f, 0.8125f)
         }
     };
 
