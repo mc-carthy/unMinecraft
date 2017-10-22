@@ -13,6 +13,9 @@ public class Chunk {
     public Block[,,] chunkData;
     public GameObject chunk;
     public ChunkStatus status;
+    public float touchedTime;
+
+    public Chunk() {}
 
     public Chunk(Vector3 pos, Material _cubeMat)
     {
@@ -38,10 +41,12 @@ public class Chunk {
         CombineQuads();
         MeshCollider meshCollider = (MeshCollider)chunk.gameObject.AddComponent(typeof(MeshCollider));
         meshCollider.sharedMesh = chunk.transform.GetComponent<MeshFilter>().mesh;
+        status = ChunkStatus.DONE;
     }
 
     private void BuildChunk()
     {
+        touchedTime = Time.time;
         chunkData = new Block[World.chunkSize, World.chunkSize, World.chunkSize];
 
         // Create blocks
@@ -55,6 +60,7 @@ public class Chunk {
                     int worldX = (int)(x + chunk.transform.position.x);
                     int worldY = (int)(y + chunk.transform.position.y);
                     int worldZ = (int)(z + chunk.transform.position.z);
+                    int surfaceHeight = Utils.GenerateHeight(worldX, worldZ);
                     
                     if (worldY == 0)
                     {
@@ -79,11 +85,11 @@ public class Chunk {
                             chunkData[x, y, z] = new Block(Block.BlockType.STONE, pos, chunk.gameObject, this);                        
                         }
                     }
-                    else if (worldY == Utils.GenerateHeight(worldX, worldZ))
+                    else if (worldY == surfaceHeight)
                     {
                         chunkData[x, y, z] = new Block(Block.BlockType.GRASS, pos, chunk.gameObject, this);                        
                     }
-                    else if (worldY < Utils.GenerateHeight(worldX, worldZ))
+                    else if (worldY < surfaceHeight)
                     {
                         chunkData[x, y, z] = new Block(Block.BlockType.DIRT, pos, chunk.gameObject, this);                        
                     }
