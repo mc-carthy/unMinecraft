@@ -11,6 +11,7 @@ public class World : MonoBehaviour {
     public static int worldGenRadius = 7;
     public static uint maxCoroutines = 1000;
     public static ConcurrentDictionary<string, Chunk> chunks;
+    public static List<string> toRemove = new List<string>();
     public Vector3 lastBuildPos;
     public GameObject player;
     public Material textureAtlas;
@@ -72,6 +73,7 @@ public class World : MonoBehaviour {
         }
 
         queue.Run(DrawChunks());
+        queue.Run(RemoveOldChunks());
     }
 
     public static string BuildChunkName(Vector3 pos)
@@ -152,7 +154,27 @@ public class World : MonoBehaviour {
             {
                 c.Value.DrawChunk();
             }
+
+            if (c.Value.chunk != null && (Vector3.Distance(player.transform.position, c.Value.chunk.transform.position) > (worldGenRadius * chunkSize)))
+            {
+                toRemove.Add(c.Key);
+            }
             yield return null;
+        }
+    }
+
+    private IEnumerator RemoveOldChunks()
+    {
+        for (int i = 0; i < toRemove.Count; i++)
+        {
+            string n = toRemove[i];
+            Chunk c;
+            if (chunks.TryGetValue(n, out c))
+            {
+                Destroy(c.chunk);
+                chunks.TryRemove(n, out c);
+                yield return null;
+            }
         }
     }
 }
