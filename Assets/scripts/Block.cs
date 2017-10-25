@@ -23,7 +23,7 @@ public class Block {
     };
 
     public bool isSolid;
-    private BlockType blockType;
+    public BlockType blockType;
     private Vector3 pos;
     private Chunk owner;
     private GameObject parent;

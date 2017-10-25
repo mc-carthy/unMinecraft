@@ -1,5 +1,34 @@
-﻿using System.Collections;
+﻿using System;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Collections;
 using UnityEngine;
+
+[Serializable]
+class BlockData {
+    
+    public Block.BlockType [,,] matrix;
+
+    
+    public BlockData() {}
+
+    public BlockData(Block[,,] b)
+    {
+        matrix = new Block.BlockType[World.chunkSize, World.chunkSize, World.chunkSize];
+
+        for (int z = 0; z < World.chunkSize; z++)
+        {
+            for (int y = 0; y < World.chunkSize; y++)
+            {
+                for (int x = 0; x < World.chunkSize; x++)
+                {
+                    matrix[x, y, z] = b[x, y, z].blockType;
+                }   
+            }   
+        }
+    }
+}
+
 
 public class Chunk {
 
@@ -14,6 +43,8 @@ public class Chunk {
     public GameObject chunk;
     public ChunkStatus status;
     public float touchedTime;
+
+    private BlockData blockData;
 
     public Chunk() {}
 
@@ -46,6 +77,9 @@ public class Chunk {
 
     private void BuildChunk()
     {
+        bool dataFromFile = false;
+        dataFromFile = Load();
+
         touchedTime = Time.time;
         chunkData = new Block[World.chunkSize, World.chunkSize, World.chunkSize];
 
@@ -60,6 +94,13 @@ public class Chunk {
                     int worldX = (int)(x + chunk.transform.position.x);
                     int worldY = (int)(y + chunk.transform.position.y);
                     int worldZ = (int)(z + chunk.transform.position.z);
+
+                    if (dataFromFile)
+                    {
+                        chunkData[x, y, z] = new Block(blockData.matrix[x, y, z], pos, chunk.gameObject, this);
+                        continue;
+                    }
+
                     int surfaceHeight = Utils.GenerateHeight(worldX, worldZ);
                     
                     if (worldY == 0)
@@ -132,6 +173,47 @@ public class Chunk {
         {
             GameObject.Destroy(quad.gameObject);
         }
+    }
+
+    private string BuildChunkFileName(Vector3 v)
+    {
+        return Application.persistentDataPath + "/saveData/Chunk_" +
+            (int)v.x + "_" +
+            (int)v.y + "_" +
+            (int)v.z + "_" +
+            World.chunkSize + "_" +
+            World.worldGenRadius + "_" +
+            ".dat";
+    }
+
+    private bool Load()
+    {
+        string chunkFile = BuildChunkFileName(chunk.transform.position);
+        if (File.Exists(chunkFile))
+        {
+            BinaryFormatter bf = new BinaryFormatter();
+            FileStream file = File.Open(chunkFile, FileMode.Open);
+            blockData = new BlockData();
+            blockData = (BlockData) bf.Deserialize(file);
+            file.Close();
+            return true;
+        }
+        return false;
+    }
+
+    public void Save()
+    {
+        string chunkFile = BuildChunkFileName(chunk.transform.position);
+
+        if (!File.Exists(chunkFile))
+        {
+            Directory.CreateDirectory(Path.GetDirectoryName(chunkFile));
+        }
+        BinaryFormatter bf = new BinaryFormatter();
+        FileStream file = File.Open(chunkFile, FileMode.OpenOrCreate);
+        blockData = new BlockData(chunkData);
+        bf.Serialize(file, blockData);
+        file.Close();
     }
 
 }
