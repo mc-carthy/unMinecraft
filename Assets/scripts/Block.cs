@@ -172,6 +172,12 @@ public class Block {
         return false;
     }
 
+    public void SetType(BlockType newType)
+    {
+        blockType = newType;
+        isSolid = (blockType == BlockType.AIR) ? false : true;
+    }
+
     private int ConvertBlockIndexToLocal(int i)
     {
         if (i == -1)
